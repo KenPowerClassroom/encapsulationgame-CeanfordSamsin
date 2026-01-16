@@ -14,7 +14,6 @@ jobs:
       solution-path: 'Ecapsulation_worksheet.sln'
       configuration: 'Release'
       platform: 'x64'
-      msbuild-version: 'latest'
       vs-version: '2022'
       build-args: ''
       enable-cache: true
