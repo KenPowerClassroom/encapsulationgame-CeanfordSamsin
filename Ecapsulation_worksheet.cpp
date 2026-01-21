@@ -42,7 +42,7 @@ public:
         return currentWeapon;
     }
 
-    void equipWeapon(Weapon* weapon) 
+    void equipWeapon(Weapon* weapon)
     {
         currentWeapon = weapon;
     }
@@ -64,6 +64,10 @@ public:
         std::cout << name << "take damage " << damage << "\n";
     }
 
+    bool isAlive() const {
+        return health > 0;
+    }
+
     void attack(Character& target) {
         if (currentWeapon) {
             std::cout << name << " attacks " << target.getName() << " with " << currentWeapon->getName() << "\n";
@@ -76,7 +80,7 @@ public:
 class Player : public Character {
 public:
     Player(const std::string& playerName, int playerHealth, int characterStrength)
-        :Character(playerName, playerHealth, characterStrength) {
+        : Character(playerName, playerHealth, characterStrength) {
     }
 
     void heal(int amount) {
@@ -84,16 +88,25 @@ public:
         std::cout << getName() << " healed by " << amount << " points.\n";
     }
 
-    void randomlyHeal() {
+    void healRandomly() {
         int healAmount = std::rand() % 50 + 1;
         heal(healAmount);
+    }
+
+    void fight(Character& enemy) {
+        attack(enemy);
+        healRandomly();
     }
 };
 
 class Enemy : public Character {
 public:
     Enemy(const std::string& EnemyName, int EnemyHealth, int characterStrength)
-        :Character(EnemyName, EnemyHealth, characterStrength) {
+        : Character(EnemyName, EnemyHealth, characterStrength) {
+    }
+
+    void fight(Character& player) {
+        attack(player);
     }
 };
 
@@ -139,17 +152,18 @@ public:
     int startGame() {
         std::cout << "Game started: " << player.getName() << " vs " << enemy.getName() << "\n";
 
-        while (player.getHealth() > 0 && enemy.getHealth() > 0) {
-            player.attack(enemy);
-            enemy.attack(player);
-            player.randomlyHeal();
+        while (player.isAlive() && enemy.isAlive()) {
+            player.fight(enemy);
+            if (enemy.isAlive()) {
+                enemy.fight(player);
+            }
         }
 
-        if (player.getHealth() <= 0) {
+        if (!player.isAlive()) {
             std::cout << player.getName() << " has been defeated.\n";
             return 1;
         }
-        else if (enemy.getHealth() <= 0) {
+        else {
             std::cout << enemy.getName() << " has been defeated.\n";
             return 0;
         }
