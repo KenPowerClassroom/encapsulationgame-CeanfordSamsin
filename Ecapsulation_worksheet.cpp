@@ -62,6 +62,11 @@ public:
 
         std::cout << name << "take damage " << damage << "\n";
     }
+
+    void equipWeapon(Weapon* weapon) 
+    {
+        currentWeapon = weapon;
+    }
 };
 
 
@@ -138,13 +143,13 @@ public:
 
     void equipPlayerWeapon(int weaponIndex) {
         if (weaponIndex >= 0 && weaponIndex < weapons.size()) {
-            player.setWeapon(&weapons[weaponIndex]);
+            player.equipWeapon(&weapons[weaponIndex]);
         }
     }
 
     void equipEnemyWeapon(int weaponIndex) {
         if (weaponIndex >= 0 && weaponIndex < weapons.size()) {
-            enemy.setWeapon(&weapons[weaponIndex]);
+            enemy.equipWeapon(&weapons[weaponIndex]);
         }
     }
 
@@ -156,7 +161,7 @@ public:
         }
         int randomIndex = std::rand() % weapons.size();
         Weapon* selectedWeapon = &weapons[randomIndex];
-        character.setWeapon(selectedWeapon);
+        character.equipWeapon(selectedWeapon);
         return selectedWeapon;
     }
 
