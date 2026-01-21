@@ -26,21 +26,32 @@ protected:
     std::string name;
     int health;
 
-public:
+private:
     int strength; // multiplier for weapon damage
-    
-	Character(const std::string& characterName, int characterHealth, int characterStrength)
-        : name(characterName), health(characterHealth), 
-          strength(characterStrength), currentWeapon(nullptr) {}
-
     Weapon* currentWeapon;
-    
+
+public:
+    Character(const std::string& characterName, int characterHealth, int characterStrength)
+        : name(characterName),
+        health(characterHealth),
+        strength(characterStrength),
+        currentWeapon(nullptr) {
+    }
+
     Weapon* getWeapon() const {
-        return { currentWeapon };
+        return currentWeapon;
+    }
+
+    void setWeapon(Weapon* weapon) {
+        currentWeapon = weapon;
+    }
+
+    int getStrength() const {
+        return strength;
     }
 
     std::string getName() const { return name; }
-    
+
     int getHealth() const { return health; }
 
     void setHealth(int newHealth) { health = newHealth; }
@@ -48,11 +59,11 @@ public:
     void takeDamage(int damage) {
         health -= damage;
         if (health < 0) health = 0;
-        
+
         std::cout << name << "take damage " << damage << "\n";
     }
-
 };
+
 
 class Player : public Character {
 public:
@@ -93,11 +104,15 @@ public:
 
             if (playerWeapon != nullptr && enemyWeapon != nullptr) {
                 std::cout << player.getName() << " attacks " << enemy.getName() << " with " << playerWeapon->getName() << "\n";
-				enemy.takeDamage(playerWeapon->getDamage() * player.strength);
+                enemy.takeDamage(playerWeapon->getDamage() * player.getStrength());
+                
+
                 std::cout << enemy.getName() << " health: " << enemy.getHealth() << "\n";
 
                 std::cout << enemy.getName() << " attacks " << player.getName() << " with " << enemyWeapon->getName() << "\n";
-                player.takeDamage(enemyWeapon->getDamage() * enemy.strength);
+                enemy.takeDamage(playerWeapon->getDamage() * player.getStrength());
+                
+
                 std::cout << player.getName() << " health: " << player.getHealth() << "\n";
             }
             else {
@@ -123,13 +138,13 @@ public:
 
     void equipPlayerWeapon(int weaponIndex) {
         if (weaponIndex >= 0 && weaponIndex < weapons.size()) {
-            player.currentWeapon=&weapons[weaponIndex];
+            player.setWeapon(&weapons[weaponIndex]);
         }
     }
 
     void equipEnemyWeapon(int weaponIndex) {
         if (weaponIndex >= 0 && weaponIndex < weapons.size()) {
-            enemy.currentWeapon = &weapons[weaponIndex];
+            enemy.setWeapon(&weapons[weaponIndex]);
         }
     }
 
@@ -141,7 +156,7 @@ public:
         }
         int randomIndex = std::rand() % weapons.size();
         Weapon* selectedWeapon = &weapons[randomIndex];
-        character.currentWeapon = selectedWeapon;
+        character.setWeapon(selectedWeapon);
         return selectedWeapon;
     }
 
