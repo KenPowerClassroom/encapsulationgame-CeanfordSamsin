@@ -40,7 +40,7 @@ public:
 
     Weapon* getWeapon() const { return currentWeapon; }
 
-    void equipWeapon(Weapon* weapon) 
+    void equipWeapon(Weapon* weapon)
     {
         currentWeapon = weapon;
     }
@@ -123,6 +123,12 @@ public:
         return nullptr;
     }
 
+    Weapon* equipWeaponTo(Character& character, int index) {
+        Weapon* weapon = getWeapon(index);
+        if (weapon) character.equipWeapon(weapon);
+        return weapon;
+    }
+
     Weapon* equipRandomWeapon(Character& character) {
         if (weapons.empty()) return nullptr;
         Weapon* selectedWeapon = &weapons[std::rand() % weapons.size()];
@@ -135,7 +141,6 @@ class GameManager {
 private:
     Player player;
     Enemy enemy;
-    WeaponManager weaponManager;
 
     void fightRound() {
         player.fight(enemy);
@@ -148,10 +153,6 @@ public:
     GameManager(const Player& p, const Enemy& e)
         : player(p), enemy(e) {
         std::srand(std::time(0));
-    }
-
-    void addWeapon(const Weapon& weapon) {
-        weaponManager.addWeapon(weapon);
     }
 
     int startGame() {
@@ -170,20 +171,6 @@ public:
             return 0;
         }
     }
-
-    void equipPlayerWeapon(int weaponIndex) {
-        Weapon* weapon = weaponManager.getWeapon(weaponIndex);
-        if (weapon) player.equipWeapon(weapon);
-    }
-
-    void equipEnemyWeapon(int weaponIndex) {
-        Weapon* weapon = weaponManager.getWeapon(weaponIndex);
-        if (weapon) enemy.equipWeapon(weapon);
-    }
-
-    void equipRandomWeapon(Character& character) {
-        weaponManager.equipRandomWeapon(character);
-    }
 };
 
 // Main Function
@@ -197,16 +184,17 @@ int main() {
     Weapon dagger("Dagger", 10);
     Weapon bow("Bow", 25);
 
+    WeaponManager weaponManager;
     GameManager game(player, enemy);
 
-    game.addWeapon(sword);
-    game.addWeapon(axe);
-    game.addWeapon(dagger);
-    game.addWeapon(bow);
+    weaponManager.addWeapon(sword);
+    weaponManager.addWeapon(axe);
+    weaponManager.addWeapon(dagger);
+    weaponManager.addWeapon(bow);
 
     // Equip weapons
-    game.equipPlayerWeapon(0); // Equip sword to player
-    game.equipEnemyWeapon(1);  // Equip axe to enemy
+    weaponManager.equipWeaponTo(player, 0); // Equip sword to player
+    weaponManager.equipWeaponTo(enemy, 1);  // Equip axe to enemy
 
     game.startGame();
 
