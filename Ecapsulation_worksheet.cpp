@@ -38,18 +38,14 @@ public:
         currentWeapon(nullptr) {
     }
 
-    Weapon* getWeapon() const {
-        return currentWeapon;
-    }
+    Weapon* getWeapon() const { return currentWeapon; }
 
-    void equipWeapon(Weapon* weapon)
+    void equipWeapon(Weapon* weapon) 
     {
         currentWeapon = weapon;
     }
 
-    int getStrength() const {
-        return strength;
-    }
+    int getStrength() const { return strength; }
 
     std::string getName() const { return name; }
 
@@ -64,16 +60,19 @@ public:
         std::cout << name << "take damage " << damage << "\n";
     }
 
-    bool isAlive() const {
-        return health > 0;
-    }
+    bool isAlive() const { return health > 0; }
 
     void attack(Character& target) {
         if (currentWeapon) {
-            std::cout << name << " attacks " << target.getName() << " with " << currentWeapon->getName() << "\n";
-            target.takeDamage(currentWeapon->getDamage() * strength);
-            std::cout << target.getName() << " health: " << target.getHealth() << "\n";
+            applyDamage(target, currentWeapon->getDamage() * strength);
         }
+    }
+
+protected:
+    void applyDamage(Character& target, int damage) {
+        std::cout << name << " attacks " << target.getName() << " with " << currentWeapon->getName() << "\n";
+        target.takeDamage(damage);
+        std::cout << target.getName() << " health: " << target.getHealth() << "\n";
     }
 };
 
@@ -126,8 +125,7 @@ public:
 
     Weapon* equipRandomWeapon(Character& character) {
         if (weapons.empty()) return nullptr;
-        int randomIndex = std::rand() % weapons.size();
-        Weapon* selectedWeapon = &weapons[randomIndex];
+        Weapon* selectedWeapon = &weapons[std::rand() % weapons.size()];
         character.equipWeapon(selectedWeapon);
         return selectedWeapon;
     }
@@ -138,6 +136,13 @@ private:
     Player player;
     Enemy enemy;
     WeaponManager weaponManager;
+
+    void fightRound() {
+        player.fight(enemy);
+        if (enemy.isAlive()) {
+            enemy.fight(player);
+        }
+    }
 
 public:
     GameManager(const Player& p, const Enemy& e)
@@ -153,10 +158,7 @@ public:
         std::cout << "Game started: " << player.getName() << " vs " << enemy.getName() << "\n";
 
         while (player.isAlive() && enemy.isAlive()) {
-            player.fight(enemy);
-            if (enemy.isAlive()) {
-                enemy.fight(player);
-            }
+            fightRound();
         }
 
         if (!player.isAlive()) {
